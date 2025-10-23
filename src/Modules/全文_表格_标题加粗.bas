@@ -66,6 +66,7 @@ Public Sub 当前表格格式设置(thickOuter As Boolean, _
         Exit Sub
     End If
     Set tb = Selection.Tables(1)
+    tbl = Selection.Tables(1)
 
     '（二）整表字号（按你“只控一个值”的思路）
     tb.Range.Font.Size = fontSizePt
@@ -83,8 +84,10 @@ Public Sub 当前表格格式设置(thickOuter As Boolean, _
 
     '（五）首行加粗 & 首行重复（直接控这两处）
     If tb.rows.Count > 0 Then
-        tb.rows(1).Range.bold = firstRowBold
-        tb.rows(1).HeadingFormat = headerRepeat
+        tbl.Cells(1).Select
+        Selection.SelectRow
+        Selection.Range.bold = firstRowBold
+        Selection.rows.HeadingFormat = headerRepeat
     End If
 
     '（六）整表是否允许跨页断行

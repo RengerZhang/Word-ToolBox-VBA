@@ -339,14 +339,14 @@ End Sub
 '============================== 工具函数（与前版一致） ==============================
 Private Function SafeStyleName(ByVal r As Range) As String
     On Error Resume Next
-    SafeStyleName = r.Style.nameLocal
+    SafeStyleName = r.Style.NameLocal
     If Err.Number <> 0 Then SafeStyleName = ""
     On Error GoTo 0
 End Function
 
 Private Function SafeStyleNameByStart(ByVal pstart As Long) As String
     On Error Resume Next
-    SafeStyleNameByStart = ActiveDocument.Range(pstart, pstart).Paragraphs(1).Range.Style.nameLocal
+    SafeStyleNameByStart = ActiveDocument.Range(pstart, pstart).Paragraphs(1).Range.Style.NameLocal
     If Err.Number <> 0 Then SafeStyleNameByStart = ""
     On Error GoTo 0
 End Function

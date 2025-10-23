@@ -50,13 +50,29 @@ Public Sub 插入单栏图片表_图片控件版()
 
 
     '（六）第2行：标题与样式
+'    With tb.Cell(2, 1).Range
+'        .text = 构造图片标题占位_按新流程(ActiveDocument, tb.Range) & "  请在此处录入图名"
+'        .ParagraphFormat.alignment = wdAlignParagraphCenter
+'        On Error Resume Next
+'        .Style = PARA_STYLE_CAPTION
+'        On Error GoTo 0
+'    End With
+    
     With tb.cell(2, 1).Range
-        .text = 构造图片标题占位_按新流程(ActiveDocument, tb.Range) & " 请在此处录入图名"
+        Dim capText As String
+        capText = 构造图片标题占位_按新流程(ActiveDocument, tb.Range)
+        ' 若函数已内含“请输入图名”（无标题场景），则不再追加；否则追加旧占位尾巴
+        If InStr(capText, "请输入图名") > 0 Then
+            .text = capText
+        Else
+            .text = capText & "  请在此处录入图名"
+        End If
         .ParagraphFormat.alignment = wdAlignParagraphCenter
         On Error Resume Next
         .Style = PARA_STYLE_CAPTION
         On Error GoTo 0
     End With
+
 
 
     '（七）整体垂直居中（更美观）
@@ -79,7 +95,7 @@ Public Sub 插入双栏图片表_图片控件版_双栏()
     Dim 总图占位 As String
     
     '（一）先生成“总图名占位”（可用你的新流程函数）
-    总图占位 = 构造图片标题占位_按新流程(doc, Selection.Range) & " 请在此处录入图名"
+    总图占位 = 构造图片标题占位_按新流程(doc, Selection.Range) & "  请在此处录入图名"
     
     '（二）在插入点建 3×2 表格
     Set tb = doc.Tables.Add(Selection.Range, 3, 2)
@@ -132,14 +148,14 @@ Public Sub 插入双栏图片表_图片控件版_双栏()
         .Height = CentimetersToPoints(0.7)
     End With
     With tb.cell(2, 1).Range
-        .text = "a） 输入子图名"
+        .text = "a）输入子图名"
         .ParagraphFormat.alignment = wdAlignParagraphCenter
         On Error Resume Next
         .Style = ActiveDocument.Styles("图片标题-子图")
         On Error GoTo 0
     End With
     With tb.cell(2, 2).Range
-        .text = "b） 输入子图名"
+        .text = "b）输入子图名"
         .ParagraphFormat.alignment = wdAlignParagraphCenter
         On Error Resume Next
         .Style = ActiveDocument.Styles("图片标题-子图")
@@ -196,9 +212,15 @@ Private Function 构造图片标题占位_按新流程(ByVal doc As Document, ByVal atRng As
     '（一）A：最近标题编号（H4→H3→H2→H1）
     chapA = 取最近标题编号(atRng, Array(4, 3, 2, 1))
     If Len(chapA) = 0 Then
-        构造图片标题占位_按新流程 = "图1.1-1"          ' 大纲未初始化 → 兜底
+        '【新需求】无大纲标题：按“全文计数到当前插入点”的序号 n 构造占位
+        '（一）统计从文首到插入点的“图片标题”段落数量
+        Dim nGlobal As Long
+        nGlobal = 统计区间图片标题数(doc, doc.content.Start, atRng.Start, "")
+        '（二）返回“图n. 请输入图名”
+        构造图片标题占位_按新流程 = "图" & CStr(nGlobal + 1) & ". 请输入图名"
         Exit Function
     End If
+
 
     '（二）B 的上界：最近H3 → 无则H2 → 无则H1 → 无则文首
     Set anchorB = 取最近标题段落(atRng, Array(3, 2, 1))
@@ -261,7 +283,7 @@ Private Function 段落是否指定级别标题(ByVal p As Paragraph, ByVal lvl As Long) A
     On Error Resume Next
     Dim nm As String
     If TypeName(p.Range.Style) = "Style" Then
-        nm = p.Range.Style.nameLocal
+        nm = p.Range.Style.NameLocal
     Else
         nm = CStr(p.Range.Style)
     End If
@@ -396,7 +418,7 @@ Private Function 段落样式等于(ByVal p As Paragraph, ByVal styleName As String) A
     On Error Resume Next
     Dim nm As String
     If TypeName(p.Range.Style) = "Style" Then
-        nm = p.Range.Style.nameLocal
+        nm = p.Range.Style.NameLocal
     Else
         nm = CStr(p.Range.Style)
     End If

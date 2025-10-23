@@ -8,12 +8,12 @@ Sub DeleteUnusedStyles2()
             With ActiveDocument.content.Find
                 .ClearFormatting
                 .MatchWildcards = False
-                .Style = CVar(oStyle.nameLocal)
-                .Execute FindText:="", Format:=True
+                .Style = CVar(oStyle.NameLocal)
+                .Execute findText:="", Format:=True
                 If Not .Found Then
                     Application.OrganizerDelete _
                     Source:=ActiveDocument.path & "\" & ActiveDocument.name, _
-                    name:=oStyle.nameLocal, Object:=wdOrganizerObjectStyles
+                    name:=oStyle.NameLocal, Object:=wdOrganizerObjectStyles
                     i = i + 1
                 End If
             End With

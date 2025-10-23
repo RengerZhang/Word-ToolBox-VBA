@@ -146,7 +146,7 @@ Private Sub 执行一轮删除(ByVal scope As Range, _
         If 在TOC区域内(p.Range, tocZones) Then GoTo NextP
 
         On Error Resume Next
-        sty = p.Range.Style.nameLocal
+        sty = p.Range.Style.NameLocal
         On Error GoTo 0
         If Not 样式在列表中(sty, targetStyles) Then GoTo NextP
 
@@ -198,7 +198,7 @@ Private Function 统计候选段数_删除编号(ByVal scope As Range, _
         If 在表格内(p.Range) Then GoTo NextP
         If 在TOC区域内(p.Range, tocZones) Then GoTo NextP
         On Error Resume Next
-        sty = p.Range.Style.nameLocal
+        sty = p.Range.Style.NameLocal
         On Error GoTo 0
         If 样式在列表中(sty, targetStyles) Then n = n + 1
 NextP:

@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 '=================================================================
 '=================== 窗体：自检报告（使用 wbReport） ===================
 Option Explicit

@@ -495,7 +495,7 @@ Private Sub 执行一轮清除_图(ByVal candTotal As Long, _
         ' 样式过滤
         If useStyleFilter Then
             On Error Resume Next
-            If p.Range.Style.nameLocal <> targetStyleName Then GoTo NextPara
+            If p.Range.Style.NameLocal <> targetStyleName Then GoTo NextPara
             On Error GoTo 0
         End If
 
@@ -548,26 +548,78 @@ End Sub
 ' 统计候选段数量（图片）
 ' 条件：正文 Story；（可选）样式=图片标题；（必选）段首以“图”；（可选）排除表格内
 ' ----------------------------------------------------------
-Private Function 统计候选段数_图(ByVal useStyleFilter As Boolean, _
-                           ByVal targetStyleName As String, _
-                           ByVal 排除表格内 As Boolean) As Long
-    Dim p As Paragraph, t As Long, head As String
-    For Each p In ActiveDocument.Paragraphs
-        If p.Range.StoryType <> wdMainTextStory Then GoTo NextP
-        If 排除表格内 Then
-            If p.Range.Information(wdWithInTable) Then GoTo NextP
+' 统计候选段数量（图片）— Find + Style，极简 + 快
+Private Function 统计候选段数_图( _
+        ByVal useStyleFilter As Boolean, _
+        ByVal targetStyleName As String, _
+        ByVal 排除表格内 As Boolean) As Long
+
+    Dim doc As Document: Set doc = ActiveDocument
+    Dim scope As Range, rng As Range, sty As Style
+    Dim cnt As Long, nextPos As Long, head As String
+
+    ' 1) 处理范围：若选区在正文，用选区；否则用全文正文
+    If Selection.Type <> wdSelectionIP And Selection.Range.StoryType = wdMainTextStory Then
+        Set scope = Selection.Range.Duplicate
+    Else
+        Set scope = doc.StoryRanges(wdMainTextStory).Duplicate
+    End If
+    Set rng = scope.Duplicate
+
+    ' 2) 尝试拿样式对象（仅当启用样式过滤时）
+    If useStyleFilter Then
+        On Error Resume Next
+        Set sty = doc.Styles(targetStyleName)
+        On Error GoTo 0
+        If sty Is Nothing Then
+            ' 不存在就直接返回 0，避免全量枚举
+            统计候选段数_图 = 0
+            Exit Function
         End If
-        If useStyleFilter Then
-            On Error Resume Next
-            If p.Range.Style.nameLocal <> targetStyleName Then GoTo NextP
-            On Error GoTo 0
-        End If
-        head = 强预清理_段首(p.Range.text)
-        If Len(head) > 0 And Left$(head, 1) = "图" Then t = t + 1
-NextP:
-    Next p
-    统计候选段数_图 = t
+    End If
+
+    With rng.Find
+        .ClearFormatting
+        .text = ""                  ' 只靠样式匹配更快
+        .Forward = True
+        .Wrap = wdFindStop
+        .Format = useStyleFilter
+        If useStyleFilter Then .Style = sty
+
+        Do While .Execute
+            ' 命中一段：可选排除表格；再做一次轻量首字检查（是否“图”）
+            If Not (排除表格内 And rng.Paragraphs(1).Range.Information(wdWithInTable)) Then
+                head = 轻量取首可见字(rng.Paragraphs(1).Range.text) ' 轻量：不做强清洗
+                If head = "图" Then cnt = cnt + 1
+            End If
+
+            ' 跳到该段末尾继续，避免重复命中
+            nextPos = rng.Paragraphs(1).Range.End
+            If nextPos >= scope.End Then Exit Do
+            rng.SetRange Start:=nextPos, End:=scope.End
+            
+
+        Loop
+    End With
+
+    统计候选段数_图 = cnt
 End Function
+
+' 轻量取首可见字符：跳过回车/制表/空格/NBSP/全角空格/零宽，直接返回第一个可见字符
+Private Function 轻量取首可见字(ByVal s As String) As String
+    Dim i As Long, ch As String, cp As Long
+    For i = 1 To Len(s)
+        ch = mid$(s, i, 1)
+        cp = AscW(ch): If cp < 0 Then cp = cp + &H10000
+        If Not (cp = 13 Or cp = 7 Or cp = 9 Or cp = 32 Or cp = &HA0 _
+                Or cp = &H3000 Or cp = &H200B Or cp = &H200C _
+                Or cp = &H200D Or cp = &HFEFF) Then
+            轻量取首可见字 = ch
+            Exit Function
+        End If
+    Next
+End Function
+
 
 ' ----------------------------------------------------------
 ' Step A：若段首以“图”，删除“图”→“首个中文”之间所有字符
@@ -589,4 +641,6 @@ Private Function 去除图片题旧前缀_到第一个中文(ByVal s As String) As String
         去除图片题旧前缀_到第一个中文 = s
     End If
 End Function
+
+
 

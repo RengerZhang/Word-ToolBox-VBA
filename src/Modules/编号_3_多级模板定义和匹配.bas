@@ -50,19 +50,19 @@ Public Function 获取所有级别参数() As Variant
 
     '--- 级别1：标题1 ---
     所有参数(1, 1) = "标题 1"
-    所有参数(1, 2) = "%1  "
+    所有参数(1, 2) = "%1 "
     所有参数(1, 3) = wdListNumberStyleArabic
     所有参数(1, 4) = 0
 
     '--- 级别2：标题2 ---
     所有参数(2, 1) = "标题 2"
-    所有参数(2, 2) = "%1.%2  "
+    所有参数(2, 2) = "%1.%2 "
     所有参数(2, 3) = wdListNumberStyleArabic
     所有参数(2, 4) = 0
 
     '--- 级别3：标题3 ---
     所有参数(3, 1) = "标题 3"
-    所有参数(3, 2) = "%1.%2.%3  "
+    所有参数(3, 2) = "%1.%2.%3 "
     所有参数(3, 3) = wdListNumberStyleArabic
     所有参数(3, 4) = 0
 
@@ -121,7 +121,7 @@ Private Sub 配置单级列表( _
     With 单级列表
         '--- 所有级别的通用固定配置 ---
         .TrailingCharacter = wdTrailingNone             ' 编号后无特殊标注
-        .startAt = 1                                    ' 编号从1开始
+        .StartAt = 1                                    ' 编号从1开始
         .alignment = wdListLevelAlignLeft               ' 编号左对齐
         .TabPosition = 0                                ' 清除制表位
         .ResetOnHigher = .Index - 1                     ' 上级变化时自动重置
@@ -131,7 +131,7 @@ Private Sub 配置单级列表( _
         .NumberFormat = 编号格式                        ' 显示格式（如 1.1/（1））
         .NumberPosition = CentimetersToPoints(对齐位置cm) ' 对齐位置（cm 转磅）
         .TextPosition = .NumberPosition                 ' 文本起始位置
-        .LinkedStyle = 文档.Styles(样式名).nameLocal    ' 绑定 Word 样式
+        .LinkedStyle = 文档.Styles(样式名).NameLocal    ' 绑定 Word 样式
     End With
 End Sub
 

@@ -1,23 +1,23 @@
-Attribute VB_Name = "编号_1_导入各级大纲样式"
+Attribute VB_Name = "样式_导入交底样式"
 Option Explicit
 
 '（一）表格样式名常量（模块级，供全模块任何过程复用）
 Private Const STYLE_TABLE_NORMAL As String = "标准表格样式"   ' 普通表：仅作为标记，不改外观
 Private Const STYLE_TABLE_PIC    As String = "图片定位表"     ' 图片表：无框线 + 0 内边距
 
-Sub 一键设置全部样式()
+Sub 一键导入交底样式_normal()
     Dim doc As Document
     Set doc = ActiveDocument
     
     Call 一键设置正文格式
-    Call 设置标题样式(doc, "标题 1", 18, wdOutlineLevel1, 0.5, 0.5, wdAlignParagraphCenter)
-    Call 设置标题样式(doc, "标题 2", 14, wdOutlineLevel2, 0.5, 0, wdAlignParagraphLeft)
-    Call 设置标题样式(doc, "标题 3", 12, wdOutlineLevel3, 0, 0, wdAlignParagraphLeft)
-    Call 设置标题样式(doc, "标题 4", 12, wdOutlineLevel4, 0, 0, wdAlignParagraphLeft)
+    Call 设置标题样式(doc, "标题 1", 10, wdOutlineLevel1, 0.5, 0.5, wdAlignParagraphLeft)
+    Call 设置标题样式(doc, "标题 2", 10, wdOutlineLevel2, 0.5, 0, wdAlignParagraphLeft)
+    Call 设置标题样式(doc, "标题 3", 10, wdOutlineLevel3, 0, 0, wdAlignParagraphLeft)
+    Call 设置标题样式(doc, "标题 4", 10, wdOutlineLevel4, 0, 0, wdAlignParagraphLeft)
     Call 创建条款项样式(doc, "条样式【1）】", wdOutlineLevelBodyText)
     Call 创建条款项样式(doc, "款样式【（1）】", wdOutlineLevelBodyText)
     Call 创建条款项样式(doc, "项样式【①】", wdOutlineLevelBodyText)
-    Call EnsureStandardTableStyle
+    Call EnsureStandardTableStyle1
     Call 导入图片标题_子图样式
     
     '========================
@@ -35,7 +35,7 @@ Sub 一键设置全部样式()
         .NameFarEast = "黑体"
         .NameAscii = "Times New Roman"
         .bold = True
-        .Size = 10.5
+        .Size = 9
     End With
     With styleTableCaption.ParagraphFormat
         .outlineLevel = wdOutlineLevelBodyText
@@ -165,9 +165,38 @@ Sub 一键设置全部样式()
         End With
     End With
     
-    
-    
-    MsgBox "所有样式一键导入完成！"
+        '==============================
+    ' 主控程序：核心逻辑分 3 步
+    '==============================
+    Dim 文档 As Document
+    Dim 多级模板 As ListTemplate
+    Dim 级别参数() As Variant    ' 存储所有级别参数（从函数获取）
+    Dim 当前级别 As Integer      ' 循环变量（控制 1-N 级）
+
+    '--- 1. 初始化文档与多级列表模板 ---
+    Set 文档 = ActiveDocument
+    Set 多级模板 = 文档.ListTemplates.Add(OutlineNumbered:=True)  ' 新建多级模板
+
+    '--- 2. 获取所有级别参数 ---
+    '   所有参数集中定义在函数【获取所有级别参数】里
+    '   以后要改编号样式、添加新级别，只需要改那个函数
+    级别参数 = 获取所有级别参数()
+
+    '--- 3. 核心循环 ---
+    '   遍历每个级别，调用【配置单级列表】函数绑定样式
+    For 当前级别 = 1 To UBound(级别参数, 1)   ' 自动识别最大级别
+        Call 配置单级列表( _
+            多级模板.ListLevels(当前级别), _
+            文档, _
+            级别参数(当前级别, 1), _
+            级别参数(当前级别, 2), _
+            级别参数(当前级别, 3), _
+            级别参数(当前级别, 4) _
+        )
+    Next 当前级别
+
+    '--- 提示完成 ---
+    MsgBox "样式导入完成，多级编号模板创建，样式绑定成功！"
 End Sub
 '========================
 ' 辅助函数：设置标题样式（可传段前/段后“行”、对齐方式）
@@ -245,7 +274,7 @@ Private Sub 一键设置正文格式()
         .NameAscii = "Times New Roman"
         .NameOther = "Times New Roman"
         .name = "Times New Roman"
-        .Size = 12
+        .Size = 10
         .bold = False
         .Italic = False
         .Underline = wdUnderlineNone
@@ -320,7 +349,7 @@ Public Sub 导入两种表格样式_仅表格层()
     End With
 End Sub
 ' === 标准化表格样式：若存在则修改；不存在则创建（段落样式）===
-Public Sub EnsureStandardTableStyle()
+Public Sub EnsureStandardTableStyle1()
     Dim stdStyle As Style
 
     ' 1) 尝试获取已存在的样式
@@ -355,7 +384,7 @@ Public Sub EnsureStandardTableStyle()
         With .Font
             .NameFarEast = "宋体"                      ' 中文
             .NameAscii = "Times New Roman"            ' 英文/数字
-            .Size = 10.5                               ' 五号
+            .Size = 10
             .bold = False
             .Color = wdColorAutomatic
         End With
@@ -417,7 +446,7 @@ Public Sub 导入图片标题_子图样式()
         .BaseStyle = "图片标题"                           ' 不基于任何样式（无继承）
         On Error GoTo 0
         .Font.bold = False
-        .Font.Size = 10.5
+        .Font.Size = 10
         
         With .ParagraphFormat
             .SpaceBefore = 0: .SpaceAfter = 0
@@ -434,7 +463,7 @@ End Sub
 '  （二）分两段判断：若 Nothing → 新建；否则再判类型
 '  （三）最后再设置字体/段落属性
 '===============================
-Public Sub EnsureParagraphStyle( _
+Public Sub EnsureParagraphStyle1( _
     ByVal styleName As String, _
     ByVal nameCN As String, ByVal nameEN As String, _
     ByVal ptSize As Single, ByVal isBold As Boolean, _
@@ -495,4 +524,106 @@ Public Sub EnsureParagraphStyle( _
         End With
     End With
 End Sub
+
+
+'==============================
+' 函数：获取所有级别参数
+' 返回二维数组：(级别, 参数列)
+' 参数列顺序 = 【样式名, 编号格式, 编号样式, 对齐位置(cm)】
+'==============================
+Public Function 获取所有级别参数() As Variant
+    Dim 所有参数(1 To 7, 1 To 4) As Variant   ' 1~7 级（如需更多，扩展此数组）
+
+    '--- 级别1：标题1 ---
+    所有参数(1, 1) = "标题 1"
+    所有参数(1, 2) = "%1、"
+    所有参数(1, 3) = 37     '简体中文
+    所有参数(1, 4) = 0
+
+    '--- 级别2：标题2 ---
+    所有参数(2, 1) = "标题 2"
+    所有参数(2, 2) = "%1.%2"
+    所有参数(2, 3) = 253
+    所有参数(2, 4) = 0
+
+    '--- 级别3：标题3 ---
+    所有参数(3, 1) = "标题 3"
+    所有参数(3, 2) = "%1.%2.%3"
+    所有参数(3, 3) = 253
+    所有参数(3, 4) = 0
+
+    '--- 级别4：标题4 ---
+    所有参数(4, 1) = "标题 4"
+    所有参数(4, 2) = "%1.%2.%3.%4"
+    所有参数(4, 3) = 253
+    所有参数(4, 4) = 0
+
+    '--- 级别5：条（示例：1））---
+    所有参数(5, 1) = "条样式【1）】"
+    所有参数(5, 2) = "%5）"
+    所有参数(5, 3) = wdListNumberStyleArabic
+    所有参数(5, 4) = 0
+
+    '--- 级别6：款（示例：（1））---
+    所有参数(6, 1) = "款样式【（1）】"
+    所有参数(6, 2) = "（%6）"
+    所有参数(6, 3) = wdListNumberStyleArabic
+    所有参数(6, 4) = 0
+
+    '--- 级别7：项（示例：①）---
+    所有参数(7, 1) = "项样式【①】"
+    所有参数(7, 2) = "%7 "
+    所有参数(7, 3) = wdListNumberStyleNumberInCircle
+    所有参数(7, 4) = 0
+
+    '--- 扩展示例 ---
+    ' 所有参数(8, 1) = "新增样式名"
+    ' 所有参数(8, 2) = "%8、  "
+    ' 所有参数(8, 3) = wdListNumberStyleArabic
+    ' 所有参数(8, 4) = 1.2
+
+    获取所有级别参数 = 所有参数
+End Function
+
+
+'==============================
+' 子过程：配置单个级别的编号规则
+' 参数：
+'   单级列表  —— 当前级别的 ListLevel 对象
+'   文档      —— 当前文档对象
+'   样式名    —— Word 样式名（如“标题 1”）
+'   编号格式  —— 显示格式（如 "%1.%2.%3"）
+'   编号样式  —— 数字样式（阿拉伯、带圈等）
+'   对齐位置  —— 编号左对齐位置（单位：cm）
+'==============================
+Private Sub 配置单级列表( _
+    ByRef 单级列表 As ListLevel, _
+    ByRef 文档 As Document, _
+    ByVal 样式名 As String, _
+    ByVal 编号格式 As String, _
+    ByVal 编号样式 As WdListNumberStyle, _
+    ByVal 对齐位置cm As Single _
+)
+    With 单级列表
+        '--- 所有级别的通用固定配置 ---
+        .TrailingCharacter = wdTrailingNone             ' 编号后无特殊标注
+        .StartAt = 1                                    ' 编号从1开始
+        .alignment = wdListLevelAlignLeft               ' 编号左对齐
+        .TabPosition = 0                                ' 清除制表位
+        .ResetOnHigher = .Index - 1                     ' 上级变化时自动重置
+
+        '--- 每个级别不同的动态配置 ---
+        .NumberStyle = 编号样式                         ' 编号样式（阿拉伯/带圈等）
+        .NumberFormat = 编号格式                        ' 显示格式（如 1.1/（1））
+        .NumberPosition = CentimetersToPoints(对齐位置cm) ' 对齐位置（cm 转磅）
+        .TextPosition = .NumberPosition                 ' 文本起始位置
+        .LinkedStyle = 文档.Styles(样式名).NameLocal    ' 绑定 Word 样式
+    End With
+End Sub
+
+
+
+
+
+
 

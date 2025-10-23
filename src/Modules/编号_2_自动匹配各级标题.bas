@@ -53,7 +53,7 @@ Sub 匹配标题并套用样式_基于配置中心()
     '     ② 或者段落的 Range 落在任一 TOC 字段的结果区域内
     Dim sty As String
     On Error Resume Next
-    sty = Para.Range.Style.nameLocal
+    sty = Para.Range.Style.NameLocal
     On Error GoTo 0
     If Len(sty) > 0 Then
         If (UCase$(Left$(sty, 3)) = "TOC" Or Left$(sty, 2) = "目录") Then GoTo NextPara

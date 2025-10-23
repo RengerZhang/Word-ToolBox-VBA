@@ -7,7 +7,7 @@ Option Explicit
 
 '============================（一）导出配置============================
 '【要求】导出根目录（自动创建）
-Private Const BACKUP_ROOT As String = "E:\BaiduSyncdisk\01 - mods backup"
+Private Const BACKUP_ROOT As String = "E:\BaiduSyncdisk\Word-ToolBox-VBA"
 '【要求】导出前是否清空 src 目录（True=清空，避免旧文件遗留）
 Private Const CLEAR_SRC_BEFORE_EXPORT As Boolean = True
 

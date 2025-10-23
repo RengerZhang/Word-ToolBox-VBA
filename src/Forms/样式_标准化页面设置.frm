@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Option Explicit
 
 
@@ -410,6 +411,10 @@ Private Sub cmdCancel_Click()
     Unload Me  ' 关闭表单
 End Sub
 
+
+Private Sub txtHeaderLeft_Change()
+
+End Sub
 
 ' === 表单初始化：设置控件默认值 ===
 Private Sub UserForm_Initialize()

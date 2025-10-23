@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Private Sub CheckBox1_Click()
     ' 根据 CheckBox 的状态来设置跨行断页功能
     If CheckBox1.Value = True Then

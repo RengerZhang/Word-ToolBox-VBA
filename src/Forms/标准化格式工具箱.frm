@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 Option Explicit
 
 ' —— 窗体返回值（主程序 Show 后读取）——
@@ -22,6 +23,12 @@ Public SelectedFontSizeName As String     ' 中文字号名（全文）
 Public SelectedFontSizePt As Single       ' 对应磅值（全文）
 Public Canceled As Boolean                ' 是否取消
 
+
+
+
+Private Sub txtHeaderLeft_Change()
+
+End Sub
 
 ' =========================
 '  窗体初始化（全量初始化）
@@ -90,6 +97,10 @@ End Sub
 
 Private Sub cmdStyleImport_Click()
     Call 一键设置全部样式
+End Sub
+
+Private Sub CommandButton24_Click()
+Call 一键导入交底样式_normal
 End Sub
 
 
@@ -267,6 +278,7 @@ Private Sub 调度执行(ByVal 动作编号 As Long)
                 Case 2: Call 表格标题自动编号_使用进度窗体
                 Case 3: Call 清除表题手工编号_使用进度窗体
                 Case 4: Call 自检_表格标题样式一致性
+                Case 5: Call 统一图片段落样式_使用进度窗体
                 Case Else: GoTo MAP_ERR
             End Select
 
@@ -455,11 +467,11 @@ End Function
 Private Sub 强制重套样式_简(ByVal doc As Document, ByVal 目标样式 As Style)
     With doc.content.Find
         .ClearFormatting
-        .replacement.ClearFormatting
+        .Replacement.ClearFormatting
         .text = ""
-        .replacement.text = ""
+        .Replacement.text = ""
         .Style = 目标样式
-        .replacement.Style = 目标样式
+        .Replacement.Style = 目标样式
         .Forward = True
         .Wrap = wdFindContinue
         .Format = True

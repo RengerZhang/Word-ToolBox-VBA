@@ -90,12 +90,12 @@ End Sub
 Private Sub ·¶Î§_°´ÑùÊ½Ìæ»»(ByVal rng As Range, ByVal oldS As Style, ByVal newS As Style)
     With rng.Find
         .ClearFormatting
-        .replacement.ClearFormatting
+        .Replacement.ClearFormatting
         .Format = True
         .Forward = True
         .Wrap = wdFindStop
         .Style = oldS
-        .replacement.Style = newS
+        .Replacement.Style = newS
         .Execute Replace:=wdReplaceAll
     End With
 End Sub

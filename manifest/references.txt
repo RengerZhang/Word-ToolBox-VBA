@@ -1,9 +1,8 @@
 ﻿Project: Normal
-Exported: 2025-09-30 17:48:37
+Exported: 2025-10-23 21:51:18
 ----------------------------------------
 VBA | {000204EF-0000-0000-C000-000000000046} | v4.2 | C:\Program Files\Common Files\Microsoft Shared\VBA\VBA7.1\VBE7.DLL
 Word | {00020905-0000-0000-C000-000000000046} | v8.7 | C:\Program Files\Microsoft Office\root\Office16\MSWORD.OLB
 stdole | {00020430-0000-0000-C000-000000000046} | v2.0 | C:\Windows\System32\stdole2.tlb
 Office | {2DF8D04C-5BFA-101B-BDE5-00AA0044DE52} | v2.8 | C:\Program Files\Common Files\Microsoft Shared\OFFICE16\MSO.DLL
 MSForms | {0D452EE1-E08F-101A-852E-02608C4D0BB4} | v2.0 | C:\WINDOWS\system32\FM20.DLL
-SHDocVw | {EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B} | v1.1 | C:\Windows\System32\ieframe.dll

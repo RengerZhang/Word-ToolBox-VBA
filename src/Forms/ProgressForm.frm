@@ -13,6 +13,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
 ' ProgressForm 的代码
 Public Event OnClose()  ' 定义关闭事件（供外部订阅）
 Public stopFlag As Boolean ' 用于控制强制停止
