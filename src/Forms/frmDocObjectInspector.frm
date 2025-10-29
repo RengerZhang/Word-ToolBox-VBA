@@ -365,17 +365,17 @@ Private Sub btnJump_Click()
     If Not mInited Then InitTables
     If mTotal = 0 Then Exit Sub
 
-    Dim s As String, n As Long
+    Dim s As String, N As Long
     s = Trim$(txtJumpIndex.text)
     If Len(s) = 0 Or Not IsNumeric(s) Then
         MsgBox "请输入正确的数字序号。", vbExclamation: Exit Sub
     End If
-    n = CLng(s)
-    If n < 1 Or n > mTotal Then
+    N = CLng(s)
+    If N < 1 Or N > mTotal Then
         MsgBox "输入超出范围：1 ～ " & mTotal, vbExclamation: Exit Sub
     End If
 
-    mIndex = n
+    mIndex = N
     UpdateSummaryUI
     LocateAndSelect_Table mIndex
     Overlay_TableFirstPage mDoc.Tables(mIndex)

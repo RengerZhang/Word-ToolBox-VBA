@@ -3,7 +3,7 @@ Sub AdjustTableFormat()
     Dim oRow As row
     Dim oCell As cell
     Dim tb As Table
-    Dim myParagraph As Paragraph, n As Integer
+    Dim myParagraph As Paragraph, N As Integer
     
     ' 调用“标准化表格样式”函数
     EnsureStandardTableStyle
@@ -71,11 +71,11 @@ Sub AdjustTableFormat()
         Selection.SelectRow
         Selection.rows.AllowBreakAcrossPages = enable
         
-        n = 1
+        N = 1
         For Each myParagraph In Selection.Paragraphs
             If Len(Trim(myParagraph.Range)) = 1 Then
                 myParagraph.Range.Delete
-                n = n + 1
+                N = N + 1
             End If
         Next
         

@@ -124,24 +124,24 @@ End Function
 
 '（C）统计正文 Story 的 Inline 图片数量
 Private Function CountInlinePictures_MainStory(ByVal doc As Document) As Long
-    Dim n As Long, ils As InlineShape
+    Dim N As Long, ils As InlineShape
     For Each ils In doc.InlineShapes
         If IsInlinePicture(ils) Then
-            If ils.Range.Paragraphs(1).Range.StoryType = wdMainTextStory Then n = n + 1
+            If ils.Range.Paragraphs(1).Range.StoryType = wdMainTextStory Then N = N + 1
         End If
     Next
-    CountInlinePictures_MainStory = n
+    CountInlinePictures_MainStory = N
 End Function
 
 '（D）统计正文 Story 的浮动图片数量
 Private Function CountFloatingPictures_MainStory(ByVal doc As Document) As Long
-    Dim n As Long, s As Shape
+    Dim N As Long, s As Shape
     For Each s In doc.Shapes
         If IsFloatingPicture(s) Then
-            If s.anchor.Paragraphs(1).Range.StoryType = wdMainTextStory Then n = n + 1
+            If s.anchor.Paragraphs(1).Range.StoryType = wdMainTextStory Then N = N + 1
         End If
     Next
-    CountFloatingPictures_MainStory = n
+    CountFloatingPictures_MainStory = N
 End Function
 
 '（E）段落是否已是目标样式（用对象比较更稳）

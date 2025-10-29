@@ -191,7 +191,7 @@ End Sub
 Private Function 统计候选段数_删除编号(ByVal scope As Range, _
                                     ByVal targetStyles As Variant, _
                                     ByVal tocZones As Collection) As Long
-    Dim p As Paragraph, n As Long, sty As String
+    Dim p As Paragraph, N As Long, sty As String
 
     For Each p In scope.Paragraphs
         If p.Range.StoryType <> wdMainTextStory Then GoTo NextP
@@ -200,10 +200,10 @@ Private Function 统计候选段数_删除编号(ByVal scope As Range, _
         On Error Resume Next
         sty = p.Range.Style.NameLocal
         On Error GoTo 0
-        If 样式在列表中(sty, targetStyles) Then n = n + 1
+        If 样式在列表中(sty, targetStyles) Then N = N + 1
 NextP:
     Next
-    统计候选段数_删除编号 = n
+    统计候选段数_删除编号 = N
 End Function
 
 Private Function 样式在列表中(ByVal sty As String, ByVal arr As Variant) As Boolean

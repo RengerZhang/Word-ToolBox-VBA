@@ -184,12 +184,12 @@ Private Function IsTargetName(ByVal compName As String) As Boolean
 End Function
 
 Private Function CountMatchesInProject(ByVal proj As Object, ByVal exportAll As Boolean) As Long
-    Dim comp As Object, n As Long
+    Dim comp As Object, N As Long
     If Not CanAccessProject(proj) Then Exit Function
     For Each comp In proj.VBComponents
-        If exportAll Or IsTargetName(comp.name) Then n = n + 1
+        If exportAll Or IsTargetName(comp.name) Then N = N + 1
     Next
-    CountMatchesInProject = n
+    CountMatchesInProject = N
 End Function
 
 Private Function SubFolderByType(ByVal vbCompType As Long) As String

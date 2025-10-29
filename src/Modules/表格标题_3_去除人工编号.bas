@@ -351,9 +351,9 @@ Private Function 正则替换(ByVal s As String, ByVal pat As String, Optional ByVal
 End Function
 
 '（工具）列出前 N 个字符的 Unicode 码点（已修正 AscW 负数），形如 "U+8868 U+002D ..."
-Private Function 列出前N码点(ByVal s As String, ByVal n As Long) As String
+Private Function 列出前N码点(ByVal s As String, ByVal N As Long) As String
     Dim i As Long, out As String, cp As Long, ch As String
-    Dim m As Long: m = IIf(Len(s) < n, Len(s), n)
+    Dim m As Long: m = IIf(Len(s) < N, Len(s), N)
     For i = 1 To m
         ch = mid$(s, i, 1)
         cp = AscW(ch)

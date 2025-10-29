@@ -1,7 +1,7 @@
 Attribute VB_Name = "全文_表格_统一字体样式"
 Sub 全文表格样式格式化()
     Dim tb As Table
-    Dim myParagraph As Paragraph, n As Integer
+    Dim myParagraph As Paragraph, N As Integer
     Dim progressForm As progressForm ' 引用之前创建的 ProgressForm
     
     ' 调用“标准化表格样式”函数

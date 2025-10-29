@@ -319,22 +319,22 @@ End Sub
 
 '（一）统计“正文 & 非表格内”的图片数量
 Private Function 统计正文非表格图片数量() As Long
-    Dim n As Long, ils As InlineShape, s As Shape
+    Dim N As Long, ils As InlineShape, s As Shape
     For Each ils In ActiveDocument.InlineShapes
         If IsInlinePicture_Img(ils) Then
             If ils.Range.Paragraphs(1).Range.StoryType = wdMainTextStory Then
-                If Not ils.Range.Information(wdWithInTable) Then n = n + 1
+                If Not ils.Range.Information(wdWithInTable) Then N = N + 1
             End If
         End If
     Next
     For Each s In ActiveDocument.Shapes
         If IsFloatingPicture_Img(s) Then
             If s.anchor.Paragraphs(1).Range.StoryType = wdMainTextStory Then
-                If Not s.anchor.Paragraphs(1).Range.Information(wdWithInTable) Then n = n + 1
+                If Not s.anchor.Paragraphs(1).Range.Information(wdWithInTable) Then N = N + 1
             End If
         End If
     Next
-    统计正文非表格图片数量 = n
+    统计正文非表格图片数量 = N
 End Function
 
 '（二）收集图片文档起点（正文 & 非表格内），输出：pos/kind/idx，cnt 为元素数
@@ -385,12 +385,12 @@ Private Sub 收集图片位置_正文_非表格(ByVal doc As Document, _
 End Sub
 
 '（三）按起点升序排序（就地交换三组数组）
-Private Sub 排序图片位置(ByRef pos() As Long, ByRef kind() As Integer, ByRef idx() As Long, ByVal n As Long)
+Private Sub 排序图片位置(ByRef pos() As Long, ByRef kind() As Integer, ByRef idx() As Long, ByVal N As Long)
     Dim i As Long, j As Long, imin As Long
     Dim tp As Long, tk As Integer, ti As Long
-    For i = 1 To n - 1
+    For i = 1 To N - 1
         imin = i
-        For j = i + 1 To n
+        For j = i + 1 To N
             If pos(j) < pos(imin) Then imin = j
         Next
         If imin <> i Then
@@ -442,11 +442,11 @@ End Function
 ' 统计正文中表的数量
 Private Function 统计正文表数量() As Long
     Dim t As Table
-    Dim n As Long
+    Dim N As Long
     For Each t In ActiveDocument.Tables
-        If t.Range.StoryType = wdMainTextStory Then n = n + 1
+        If t.Range.StoryType = wdMainTextStory Then N = N + 1
     Next
-    统计正文表数量 = n
+    统计正文表数量 = N
 End Function
 
 ' 向上取第一个非空段（允许多个空白段）
@@ -536,10 +536,10 @@ End Function
 
 ' 显示号：有 4 段用 4 段；否则按现有段数（1/2/3）
 Private Function 构造显示号_最多四级(ByVal segs As Variant) As String
-    Dim n As Long
+    Dim N As Long
     If IsEmpty(segs) Then Exit Function
-    n = UBound(segs) - LBound(segs) + 1
-    Select Case n
+    N = UBound(segs) - LBound(segs) + 1
+    Select Case N
         Case Is >= 4: 构造显示号_最多四级 = segs(0) & "." & segs(1) & "." & segs(2) & "." & segs(3)
         Case 3:       构造显示号_最多四级 = segs(0) & "." & segs(1) & "." & segs(2)
         Case 2:       构造显示号_最多四级 = segs(0) & "." & segs(1)
@@ -549,10 +549,10 @@ End Function
 
 ' 计数Key：固定用到第三级；不足三级时用现有段数
 Private Function 构造计数Key_按第三级(ByVal segs As Variant) As String
-    Dim n As Long
+    Dim N As Long
     If IsEmpty(segs) Then Exit Function
-    n = UBound(segs) - LBound(segs) + 1
-    Select Case n
+    N = UBound(segs) - LBound(segs) + 1
+    Select Case N
         Case Is >= 3: 构造计数Key_按第三级 = segs(0) & "." & segs(1) & "." & segs(2)
         Case 2:       构造计数Key_按第三级 = segs(0) & "." & segs(1)
         Case Else:    构造计数Key_按第三级 = segs(0)

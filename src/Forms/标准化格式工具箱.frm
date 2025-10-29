@@ -26,10 +26,6 @@ Public Canceled As Boolean                ' 是否取消
 
 
 
-Private Sub txtHeaderLeft_Change()
-
-End Sub
-
 ' =========================
 '  窗体初始化（全量初始化）
 ' =========================

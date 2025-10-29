@@ -32,7 +32,7 @@ Private Sub 全文表格格式化_核心( _
     Dim tb As Table
     Dim oCell As cell
     Dim myParagraph As Paragraph
-    Dim n As Integer
+    Dim N As Integer
     Dim progressForm As progressForm
     Dim i As Long, r As Long
 
@@ -96,11 +96,11 @@ Private Sub 全文表格格式化_核心( _
             End With
             Selection.SelectRow
             Selection.rows.AllowBreakAcrossPages = False
-            n = 1
+            N = 1
             For Each myParagraph In Selection.Paragraphs
                 If Len(Trim(myParagraph.Range)) = 1 Then
                     myParagraph.Range.Delete
-                    n = n + 1
+                    N = N + 1
                 End If
             Next
         Next oCell
@@ -163,11 +163,11 @@ End Function
 
 '——统计“含图单元格”数量
 Private Function CountImageCells(ByVal tb As Table) As Long
-    Dim c As cell, n As Long
+    Dim c As cell, N As Long
     For Each c In tb.Range.Cells
-        If CellHasImage(c) Then n = n + 1
+        If CellHasImage(c) Then N = N + 1
     Next c
-    CountImageCells = n
+    CountImageCells = N
 End Function
 
 '——图片表专用：表宽自适应；含图单元格→【图片格式】；其余→【图片标题】

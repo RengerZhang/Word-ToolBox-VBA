@@ -47,13 +47,13 @@ End Function
 
 '——— 读取“样式名”数组（默认只返回文档中已存在的样式）
 Public Function 获取样式名数组(Optional onlyExisting As Boolean = True) As Variant
-    Dim cfg As Variant, i As Long, n As Long
+    Dim cfg As Variant, i As Long, N As Long
     Dim buf() As String
     Dim sty As Style, name As String
     
     cfg = 获取所有级别参数()  ' 来自【步骤三】的权威参数表
     ReDim buf(1 To UBound(cfg, 1))
-    n = 0
+    N = 0
     
     For i = 1 To UBound(cfg, 1)
         name = CStr(cfg(i, 1))
@@ -62,18 +62,18 @@ Public Function 获取样式名数组(Optional onlyExisting As Boolean = True) As Varia
             Set sty = ActiveDocument.Styles(name)
             On Error GoTo 0
             If Not sty Is Nothing Then
-                n = n + 1: buf(n) = name
+                N = N + 1: buf(N) = name
                 Set sty = Nothing
             End If
         Else
-            n = n + 1: buf(n) = name
+            N = N + 1: buf(N) = name
         End If
     Next i
     
-    If n = 0 Then
+    If N = 0 Then
         获取样式名数组 = Array() ' 空
     Else
-        ReDim Preserve buf(1 To n)
+        ReDim Preserve buf(1 To N)
         获取样式名数组 = buf
     End If
 End Function
@@ -157,7 +157,7 @@ Public Function 生成标题匹配规则集() As Variant
     Dim cat As Integer, pat As String
     Dim rowsCol As New Collection
     Dim rows() As Variant
-    Dim p As Variant, j As Long, n As Long, k As Long
+    Dim p As Variant, j As Long, N As Long, k As Long
     Dim order As Variant
     
     '（二）初始化8个桶：1款 2条 3项 4四段 5三段 6二段 7单段带点 8单段纯数字
@@ -190,14 +190,14 @@ Public Function 生成标题匹配规则集() As Variant
     Next p
     
     '（六）转成二维数组返回给调用方
-    n = rowsCol.Count
-    If n = 0 Then
+    N = rowsCol.Count
+    If N = 0 Then
         生成标题匹配规则集 = Array()
         Exit Function
     End If
     
-    ReDim rows(1 To n, 1 To 2)
-    For k = 1 To n
+    ReDim rows(1 To N, 1 To 2)
+    For k = 1 To N
         rows(k, 1) = rowsCol(k)(0)  ' pattern
         rows(k, 2) = rowsCol(k)(1)  ' style
     Next k
@@ -311,13 +311,13 @@ End Function
 
 '——— 读取“样式名”数组（针对指定文档；onlyExisting=True 时只返回该文档里存在的样式）
 Public Function 获取样式名数组_针对文档(ByVal src As Document, Optional onlyExisting As Boolean = True) As Variant
-    Dim cfg As Variant, i As Long, n As Long
+    Dim cfg As Variant, i As Long, N As Long
     Dim buf() As String
     Dim sty As Style, name As String
 
     cfg = 获取所有级别参数()  ' 来自步骤（三）
     ReDim buf(1 To UBound(cfg, 1))
-    n = 0
+    N = 0
 
     For i = 1 To UBound(cfg, 1)
         name = CStr(cfg(i, 1))
@@ -326,18 +326,18 @@ Public Function 获取样式名数组_针对文档(ByVal src As Document, Optional onlyExis
             Set sty = src.Styles(name)
             On Error GoTo 0
             If Not sty Is Nothing Then
-                n = n + 1: buf(n) = name
+                N = N + 1: buf(N) = name
                 Set sty = Nothing
             End If
         Else
-            n = n + 1: buf(n) = name
+            N = N + 1: buf(N) = name
         End If
     Next i
 
-    If n = 0 Then
+    If N = 0 Then
         获取样式名数组_针对文档 = Array()
     Else
-        ReDim Preserve buf(1 To n)
+        ReDim Preserve buf(1 To N)
         获取样式名数组_针对文档 = buf
     End If
 End Function

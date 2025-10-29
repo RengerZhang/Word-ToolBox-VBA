@@ -1,7 +1,7 @@
 Attribute VB_Name = "全文_表格_标题加粗"
 Sub 全文表格首行加粗()
     Dim tb As Table
-    Dim myParagraph As Paragraph, n As Integer
+    Dim myParagraph As Paragraph, N As Integer
     Dim progressForm As progressForm ' 引用之前创建的 ProgressForm
     
     

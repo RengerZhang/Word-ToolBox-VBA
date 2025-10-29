@@ -176,11 +176,11 @@ End Sub
 ' 统计正文中表的数量
 Private Function 统计正文表数量() As Long
     Dim t As Table
-    Dim n As Long
+    Dim N As Long
     For Each t In ActiveDocument.Tables
-        If t.Range.StoryType = wdMainTextStory Then n = n + 1
+        If t.Range.StoryType = wdMainTextStory Then N = N + 1
     Next
-    统计正文表数量 = n
+    统计正文表数量 = N
 End Function
 
 ' 向上取第一个非空段（允许多个空白段）
@@ -270,10 +270,10 @@ End Function
 
 ' 显示号：有 4 段用 4 段；否则按现有段数（1/2/3）
 Private Function 构造显示号_最多四级(ByVal segs As Variant) As String
-    Dim n As Long
+    Dim N As Long
     If IsEmpty(segs) Then Exit Function
-    n = UBound(segs) - LBound(segs) + 1
-    Select Case n
+    N = UBound(segs) - LBound(segs) + 1
+    Select Case N
         Case Is >= 4: 构造显示号_最多四级 = segs(0) & "." & segs(1) & "." & segs(2) & "." & segs(3)
         Case 3:       构造显示号_最多四级 = segs(0) & "." & segs(1) & "." & segs(2)
         Case 2:       构造显示号_最多四级 = segs(0) & "." & segs(1)
@@ -283,10 +283,10 @@ End Function
 
 ' 计数Key：固定用到第三级；不足三级时用现有段数
 Private Function 构造计数Key_按第三级(ByVal segs As Variant) As String
-    Dim n As Long
+    Dim N As Long
     If IsEmpty(segs) Then Exit Function
-    n = UBound(segs) - LBound(segs) + 1
-    Select Case n
+    N = UBound(segs) - LBound(segs) + 1
+    Select Case N
         Case Is >= 3: 构造计数Key_按第三级 = segs(0) & "." & segs(1) & "." & segs(2)
         Case 2:       构造计数Key_按第三级 = segs(0) & "." & segs(1)
         Case Else:    构造计数Key_按第三级 = segs(0)

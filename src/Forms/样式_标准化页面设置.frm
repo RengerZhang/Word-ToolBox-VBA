@@ -412,10 +412,6 @@ Private Sub cmdCancel_Click()
 End Sub
 
 
-Private Sub txtHeaderLeft_Change()
-
-End Sub
-
 ' === 表单初始化：设置控件默认值 ===
 Private Sub UserForm_Initialize()
     ' 竖版边距默认值

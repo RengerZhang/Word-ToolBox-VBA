@@ -14,11 +14,11 @@ End Sub
 
 '——为每个表计算“就近上一非空段”的 Start（找不到=-1）
 Private Function BuildPrevStartArray(ByVal doc As Document) As Long()
-    Dim n As Long: n = doc.Tables.Count
-    Dim arr() As Long: ReDim arr(1 To n)
+    Dim N As Long: N = doc.Tables.Count
+    Dim arr() As Long: ReDim arr(1 To N)
     Dim i As Long, p As Paragraph
 
-    For i = 1 To n
+    For i = 1 To N
         Set p = PrevNonEmptyParaForTable(doc.Tables(i))
         If p Is Nothing Then
             arr(i) = -1

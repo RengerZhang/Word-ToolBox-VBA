@@ -76,17 +76,17 @@ End Function
 ' 规则：单元格内 InlineShapes.Count + ShapeRange.Count > 0 即视为“含图”
 '========================================
 Private Function CountImageCells(ByVal tb As Table, ByRef coords As String) As Long
-    Dim c As cell, n As Long, buf As String
+    Dim c As cell, N As Long, buf As String
     For Each c In tb.Range.Cells
         If (c.Range.InlineShapes.Count > 0) Or (SafeShapeCount_InRange(c.Range) > 0) Then
-            n = n + 1
+            N = N + 1
             If Len(buf) > 0 Then buf = buf & ","
             ' Word 的 Cell 对象支持 RowIndex / ColumnIndex
             buf = buf & "(" & c.rowIndex & "," & c.ColumnIndex & ")"
         End If
     Next c
     coords = buf
-    CountImageCells = n
+    CountImageCells = N
 End Function
 
 '========================================

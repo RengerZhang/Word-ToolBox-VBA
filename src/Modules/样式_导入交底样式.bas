@@ -17,7 +17,7 @@ Sub 一键导入交底样式_normal()
     Call 创建条款项样式(doc, "条样式【1）】", wdOutlineLevelBodyText)
     Call 创建条款项样式(doc, "款样式【（1）】", wdOutlineLevelBodyText)
     Call 创建条款项样式(doc, "项样式【①】", wdOutlineLevelBodyText)
-    Call EnsureStandardTableStyle1
+    Call EnsureStandardTableStyle
     Call 导入图片标题_子图样式
     
     '========================
@@ -349,7 +349,7 @@ Public Sub 导入两种表格样式_仅表格层()
     End With
 End Sub
 ' === 标准化表格样式：若存在则修改；不存在则创建（段落样式）===
-Public Sub EnsureStandardTableStyle1()
+Public Sub EnsureStandardTableStyle()
     Dim stdStyle As Style
 
     ' 1) 尝试获取已存在的样式
@@ -463,7 +463,7 @@ End Sub
 '  （二）分两段判断：若 Nothing → 新建；否则再判类型
 '  （三）最后再设置字体/段落属性
 '===============================
-Public Sub EnsureParagraphStyle1( _
+Public Sub EnsureParagraphStyle( _
     ByVal styleName As String, _
     ByVal nameCN As String, ByVal nameEN As String, _
     ByVal ptSize As Single, ByVal isBold As Boolean, _

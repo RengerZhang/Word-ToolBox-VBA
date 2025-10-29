@@ -197,8 +197,8 @@ Public Sub LoadReportFromArray(ByRef arr As Variant, Optional ByVal captionKind 
     Dim unitName As String: unitName = IIf(isPic, "张图", "张表")
     Dim idColName As String: idColName = IIf(isPic, "图号", "表号")
 
-    Dim html As String, i As Long, n As Long
-    n = SafeRowCount(arr)
+    Dim html As String, i As Long, N As Long
+    N = SafeRowCount(arr)
 
     ' 2) 样式（保持你的原样式，仅字符串拼接）
     html = "<!doctype html><html><head><meta charset='utf-8'>" & _
@@ -219,7 +219,7 @@ Public Sub LoadReportFromArray(ByRef arr As Variant, Optional ByVal captionKind 
            ".bad-blue{color:#1e88e5;font-weight:600}" & _
            "a{color:#1155cc;text-decoration:underline}</style></head><body>"
 
-    html = html & "<h3>" & IIf(isPic, "图片", "表格") & "预检查结果（" & CStr(n) & " " & unitName & "）</h3>"
+    html = html & "<h3>" & IIf(isPic, "图片", "表格") & "预检查结果（" & CStr(N) & " " & unitName & "）</h3>"
     html = html & "<table><tr><th>" & idColName & "</th><th>表前段落和孤儿段落</th><th>状态</th><th>编辑</th></tr>"
 
     ' 3) 孤儿段（第一列留空；红色；“定位”保持）
@@ -241,12 +241,12 @@ Public Sub LoadReportFromArray(ByRef arr As Variant, Optional ByVal captionKind 
     End If
 
     ' 4) 主体行（与原逻辑相同，只把“表”判断/文字换成 captionKind）
-    For i = 1 To n
+    For i = 1 To N
         Dim label As String:  label = CStr(arr(i, 12))    ' “表X-X”或“图X-X”
         Dim rawT As String:   rawT = CStr(arr(i, 4))      ' 标题所在段原文
         Dim isCap As Boolean: isCap = (arr(i, 6) = True)  ' 是否套了目标样式
         Dim tStart As Long:   tStart = CLng(arr(i, 2))    ' 对应对象起点（表/图）
-        Dim pstart As Long:   pstart = CLng(arr(i, 3))    ' 标题段起点
+        Dim pStart As Long:   pStart = CLng(arr(i, 3))    ' 标题段起点
 
         Dim col2Txt As String
         If Len(rawT) > 150 Then
@@ -273,7 +273,7 @@ Public Sub LoadReportFromArray(ByRef arr As Variant, Optional ByVal captionKind 
                "<td class='col1'><a href='cmd?goto=" & CStr(tStart) & "'>" & HtmlEncode(label) & "</a></td>" & _
                "<td class='col2'>" & col2Txt & "</td>" & _
                "<td class='col3'>" & status & "</td>" & _
-               "<td class='col4'>" & IIf(pstart > 0, "<a href='cmd?edit=" & CStr(pstart) & "'>编辑</a>", "<span class='status-red'>—</span>") & "</td>" & _
+               "<td class='col4'>" & IIf(pStart > 0, "<a href='cmd?edit=" & CStr(pStart) & "'>编辑</a>", "<span class='status-red'>—</span>") & "</td>" & _
                "</tr>"
     Next
 
@@ -305,7 +305,7 @@ Private Sub wbReport_BeforeNavigate2(ByVal pDisp As Object, URL As Variant, _
         Cancel = True
         Dim v As Long
         v = CLng(val(mid$(s, hitPos + Len("cmd?goto=")))) ' Val 遇非数字自动停止
-        GoToDocumentPos v
+        GoToDocumentPos startPos:=v, offsetLines:=10
     End If
     
     ' ——新增：编辑入口，先跳到该段起点，方便直接修改
@@ -321,17 +321,27 @@ SAFE_EXIT:
 End Sub
 
 '（五）定位到指定 Range.Start
-Private Sub GoToDocumentPos(ByVal startPos As Long)
+'（定位到文档位置，并尽量把目标置于屏幕中央）
+Private Sub GoToDocumentPos(ByVal startPos As Long, Optional ByVal offsetLines As Long = 2)
     On Error Resume Next
+
+    '（一）锁定并选中目标 Range
     Dim doc As Document: Set doc = ActiveDocument
     Dim r As Range: Set r = doc.Range(Start:=startPos, End:=startPos)
     r.Select
-    If Err.Number = 0 Then
-        Application.Activate
-        ActiveWindow.ScrollIntoView r, True
-    End If
+
+    '（二）滚到可视区顶端（True 表示把 Range.Start 顶到窗口顶部）
+    Application.Activate
+    ActiveWindow.ScrollIntoView r, True
+    DoEvents
+
+    '（三）向下微滚 1~2 行，给上方留点上下文
+    If offsetLines < 0 Then offsetLines = 0
+    If offsetLines > 0 Then ActiveWindow.SmallScroll Down:=offsetLines
+
     On Error GoTo 0
 End Sub
+
 
 '（六）HTML 转义
 Private Function HtmlEncode(ByVal s As String) As String
@@ -376,3 +386,5 @@ Private Function SafeRowCount(ByVal v As Variant) As Long
 FAIL:
     SafeRowCount = 0
 End Function
+
+

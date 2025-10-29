@@ -207,7 +207,7 @@ Private Function 构造图片标题占位_按新流程(ByVal doc As Document, ByVal atRng As
     Dim anchorB As Paragraph
     Dim chapB As String
     Dim secStart As Long, secEnd As Long
-    Dim n As Long, idx As Long
+    Dim N As Long, idx As Long
 
     '（一）A：最近标题编号（H4→H3→H2→H1）
     chapA = 取最近标题编号(atRng, Array(4, 3, 2, 1))
@@ -236,10 +236,10 @@ Private Function 构造图片标题占位_按新流程(ByVal doc As Document, ByVal atRng As
     secEnd = 计算下界最早出现点(doc, secStart)
 
     '（四）统计区间 [secStart..secEnd) 内的“图片标题”数量（严格/稳妥二选一）
-    n = 统计区间图片标题数(doc, secStart, secEnd, chapB)
+    N = 统计区间图片标题数(doc, secStart, secEnd, chapB)
 
     '（五）组装占位
-    idx = n + 1
+    idx = N + 1
     构造图片标题占位_按新流程 = "图" & chapA & "-" & CStr(idx)
 End Function
 
@@ -396,22 +396,22 @@ End Function
 '==========================================================
 Private Function 统计区间图片标题数(ByVal doc As Document, ByVal startPos As Long, ByVal endPos As Long, ByVal chapB As String) As Long
     Dim scan As Range: Set scan = doc.Range(Start:=startPos, End:=endPos)
-    Dim p As Paragraph, t As String, n As Long
+    Dim p As Paragraph, t As String, N As Long
     For Each p In scan.Paragraphs
         If 段落样式等于(p, "图片标题") Then
             t = 清理可见文本(p.Range.text)
             If Len(chapB) = 0 Then
-                n = n + 1
+                N = N + 1
             Else
                 ' 匹配：^图<chapB>- 或 ^图<chapB>.
                 If Left$(t, Len("图" & chapB & "-")) = "图" & chapB & "-" _
                    Or Left$(t, Len("图" & chapB & ".")) = "图" & chapB & "." Then
-                    n = n + 1
+                    N = N + 1
                 End If
             End If
         End If
     Next
-    统计区间图片标题数 = n
+    统计区间图片标题数 = N
 End Function
 
 Private Function 段落样式等于(ByVal p As Paragraph, ByVal styleName As String) As Boolean

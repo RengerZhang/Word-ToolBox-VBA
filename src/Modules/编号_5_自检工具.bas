@@ -17,7 +17,7 @@ Sub 配置自检_生成报告()
     Dim srcDoc As Document   ' ← 要检查的源文档
     Dim rptDoc As Document   ' ← 新建的自检报告
     Dim cfg As Variant
-    Dim i As Long, n As Long
+    Dim i As Long, N As Long
     Dim rng As Range
     Dim tbl As Table
     Dim 行 As Long
@@ -39,7 +39,7 @@ Sub 配置自检_生成报告()
         MsgBox "未读取到编号配置（获取所有级别参数() 返回为空）。", vbExclamation
         Exit Sub
     End If
-    n = UBound(cfg, 1)
+    N = UBound(cfg, 1)
 
     ' 3) 新建报告文档（这会改变 ActiveDocument；所以后面一律用 srcDoc/rptDoc）
     Set rptDoc = Documents.Add
@@ -64,7 +64,7 @@ Sub 配置自检_生成报告()
     rng.text = "配置自检报告" & vbCrLf & Format(Now, "yyyy-mm-dd hh:nn:ss") & vbCrLf & vbCrLf
 
     ' 5) 表格（增加“自动编号计数”列，便于区分两类）
-    Set tbl = rptDoc.Tables.Add(Range:=rng.Duplicate, NumRows:=n + 1, NumColumns:=10)
+    Set tbl = rptDoc.Tables.Add(Range:=rng.Duplicate, NumRows:=N + 1, NumColumns:=10)
     With tbl
         .AllowAutoFit = True
         .AutoFitBehavior wdAutoFitWindow
@@ -112,7 +112,7 @@ Sub 配置自检_生成报告()
     End With
 
     ' 6) 逐级填表（全部以 srcDoc 为准）
-    For i = 1 To n
+    For i = 1 To N
         样式名 = CStr(cfg(i, 1))
         编号格式 = CStr(cfg(i, 2))
         编号样式值 = CLng(cfg(i, 3))

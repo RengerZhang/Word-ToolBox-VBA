@@ -91,14 +91,14 @@ Public Sub 表标题样式统一_带进度()
     
     EnsureParaStyleExists doc, "表格标题"
     
-    Dim n As Long: n = doc.Tables.Count
-    If n = 0 Then
+    Dim N As Long: N = doc.Tables.Count
+    If N = 0 Then
         UpdateBar pf, 200, 200, "文档中没有表格。"
         GoTo EXIT_B
     End If
     
     Dim i As Long, tbl As Table, rng As Range, prevPara As Paragraph
-    For i = 1 To n
+    For i = 1 To N
         Set tbl = doc.Tables(i)
         Set rng = tbl.Range: rng.Collapse wdCollapseStart
         Set prevPara = rng.Paragraphs(1).Previous
@@ -112,11 +112,11 @@ Public Sub 表标题样式统一_带进度()
             Set prevPara = prevPara.Previous
         Loop
         
-        UpdateBar pf, CInt(200# * i / n), 200, "处理表格：" & i & "/" & n
+        UpdateBar pf, CInt(200# * i / N), 200, "处理表格：" & i & "/" & N
         If Not pf Is Nothing Then If pf.stopFlag Then Exit For
     Next
     
-    StatusPulse pf, "表标题匹配完成：共处理 " & n & " 张表。"
+    StatusPulse pf, "表标题匹配完成：共处理 " & N & " 张表。"
 
 EXIT_B:
     If Not pf Is Nothing Then Unload pf
@@ -175,11 +175,11 @@ End Function
 
 '（十一）统计文档中的“图片型”浮动 Shape 数量
 Private Function CountPictureShapes(ByVal doc As Document) As Long
-    Dim s As Shape, n As Long
+    Dim s As Shape, N As Long
     For Each s In doc.Shapes
-        If IsPictureShape(s) Then n = n + 1
+        If IsPictureShape(s) Then N = N + 1
     Next
-    CountPictureShapes = n
+    CountPictureShapes = N
 End Function
 
 '（十二）保证段落样式存在（不存在则创建）

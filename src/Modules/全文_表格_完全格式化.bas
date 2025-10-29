@@ -27,7 +27,7 @@ Private Sub 全文表格格式化_核心( _
     Dim tb As Table
     Dim oCell As cell
     Dim myParagraph As Paragraph
-    Dim n As Integer
+    Dim N As Integer
     Dim progressForm As progressForm
     Dim i As Long, r As Long
 
@@ -69,11 +69,11 @@ Private Sub 全文表格格式化_核心( _
             Selection.SelectRow
             Selection.rows.AllowBreakAcrossPages = False  ' 如需跟随你原先的 enable 变量，可替换为该变量
 
-            n = 1
+            N = 1
             For Each myParagraph In Selection.Paragraphs
                 If Len(Trim(myParagraph.Range)) = 1 Then
                     myParagraph.Range.Delete
-                    n = n + 1
+                    N = N + 1
                 End If
             Next
         Next oCell
