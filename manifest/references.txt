@@ -1,5 +1,5 @@
 ﻿Project: Normal
-Exported: 2025-10-30 08:25:38
+Exported: 2025-10-30 09:09:22
 ----------------------------------------
 VBA | {000204EF-0000-0000-C000-000000000046} | v4.2 | C:\Program Files\Common Files\Microsoft Shared\VBA\VBA7.1\VBE7.DLL
 Word | {00020905-0000-0000-C000-000000000046} | v8.7 | C:\Program Files\Microsoft Office\root\Office16\MSWORD.OLB

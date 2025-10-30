@@ -359,28 +359,25 @@ Private Sub WriteGitignore(ByVal root As String)
     WriteTextFile root & "\.gitignore", Join(lines, vbCrLf)
 End Sub
 
-' 写 README（仅首次创建模板；以后仅更新自动区块）
+
+
 Private Sub WriteReadme(ByVal root As String, ByVal projName As String, ByVal commitMsg As String)
     Dim path As String: path = root & "\README.md"
-    Dim content As String, exists As Boolean
+    Dim content As String, exists As Boolean, oldAutoBlock As String
     exists = (Len(Dir$(path)) > 0)
-    Dim autoBlock As String: autoBlock = BuildReadmeAutoBlock(projName, commitMsg)
 
-    If Not exists Then
-        ' 第一次生成：完整模板 + 自动区块
-        WriteTextFile path, BuildReadmeTemplate(projName, autoBlock)
-    Else
-        ' 后续运行：仅替换自动区块，保留用户手工内容
+    If exists Then
         content = ReadTextFile(path)
-        If InStr(1, content, MARK_BEGIN, vbTextCompare) > 0 And _
-           InStr(1, content, MARK_END, vbTextCompare) > 0 Then
-            content = ReplaceAutoBlock(content, MARK_BEGIN, MARK_END, autoBlock)
-        Else
-            content = content & vbCrLf & vbCrLf & autoBlock
-        End If
-        WriteTextFile path, content
+        oldAutoBlock = ExtractAutoBlock(content, MARK_BEGIN, MARK_END)
+        Dim autoBlock As String: autoBlock = BuildReadmeAutoBlock(projName, commitMsg, oldAutoBlock)
+        content = ReplaceAutoBlock(content, MARK_BEGIN, MARK_END, autoBlock)
+    Else
+autoBlock = BuildReadmeAutoBlock(projName, commitMsg, "")
+        content = BuildReadmeTemplate(projName, autoBlock)
     End If
+    WriteTextFile path, content
 End Sub
+
 ' 生成 README 模板（少行继续符）
 Private Function BuildReadmeTemplate(ByVal projName As String, ByVal autoBlock As String) As String
     Dim lines As Variant
@@ -404,18 +401,97 @@ Private Function BuildReadmeTemplate(ByVal projName As String, ByVal autoBlock A
     BuildReadmeTemplate = Join(lines, vbCrLf)
 End Function
 
-' 生成 README 的“自动区块”（只此段会被覆盖）
-Private Function BuildReadmeAutoBlock(ByVal projName As String, ByVal commitMsg As String) As String
+' 生成包含历史记录的自动区块
+' 生成包含“日期块+列表+表格”的自动区块
+Private Function BuildReadmeAutoBlock(ByVal projName As String, ByVal commitMsg As String, ByVal oldAutoBlock As String) As String
+    Dim todayDate As String: todayDate = Format(Now, "yyyy-mm-dd")
+    Dim exportTime As String: exportTime = Format(Now, "yyyy-mm-dd HH:NN:SS")
+    Dim tableRow As String: tableRow = "| " & projName & " | " & exportTime & " | " & BACKUP_ROOT & " |"
+    
+    ' 解析旧区块的结构：日期块、列表项、表格行
+    Dim blocks() As String, currentBlock As String, listItems As Collection, tableRows As Collection
+    Set listItems = New Collection
+    Set tableRows = New Collection
+    
+    If oldAutoBlock <> "" Then
+        ' 提取旧区块的核心内容（去掉首尾标记）
+        Dim oldContent As String
+        oldContent = mid$(oldAutoBlock, Len(MARK_BEGIN) + 2, Len(oldAutoBlock) - Len(MARK_BEGIN) - Len(MARK_END) - 3)
+        blocks = Split(oldContent, "**")  ' 按“**”分割日期块
+        
+        ' 遍历所有日期块，提取列表和表格
+        For i = 0 To UBound(blocks)
+            If blocks(i) Like "* 更新 *" Then
+                currentBlock = blocks(i)
+                ' 提取日期（如“2025-10-30”）
+                Dim blockDate As String: blockDate = Left$(currentBlock, 10)
+                ' 提取列表项（按“\n1. ”分割）
+                Dim listParts() As String: listParts = Split(blocks(i + 1), vbCrLf & "1. ")
+                For j = 1 To UBound(listParts)
+                    listItems.Add blockDate & "|" & "1. " & listParts(j)
+                Next
+                ' 提取表格行（按“|”分割）
+                Dim tableParts() As String: tableParts = Split(blocks(i + 2), vbCrLf & "|")
+                For j = 1 To UBound(tableParts)
+                    tableRows.Add blockDate & "|" & "| " & tableParts(j)
+                Next
+            End If
+        Next
+    End If
+    
+    ' 处理本次更新：追加到今日块或新增今日块
+    Dim isTodayBlockExist As Boolean: isTodayBlockExist = False
+    Dim newList As String, newTable As String
+    
+    ' 追加列表项
+    newList = "1. " & commitMsg & vbCrLf
+    For i = 1 To listItems.Count
+        Dim itemDate As String, itemContent As String
+        itemDate = Split(listItems(i), "|")(0)
+        itemContent = Split(listItems(i), "|")(1)
+        If itemDate = todayDate Then
+            newList = newList & itemContent & vbCrLf
+            isTodayBlockExist = True
+        Else
+            newList = newList & itemContent & vbCrLf
+        End If
+    Next
+    newList = Left$(newList, Len(newList) - 2)  ' 去掉最后一个换行
+    
+    ' 追加表格行
+    newTable = tableRow & vbCrLf
+    For i = 1 To tableRows.Count
+        Dim rowDate As String, rowContent As String
+        rowDate = Split(tableRows(i), "|")(0)
+        rowContent = Split(tableRows(i), "|")(1)
+        If rowDate = todayDate Then
+            newTable = newTable & rowContent & vbCrLf
+            isTodayBlockExist = True
+        Else
+            newTable = newTable & rowContent & vbCrLf
+        End If
+    Next
+    newTable = "| 工程名 | 导出时间 | 根目录 |" & vbCrLf & "| ------ | -------- | ------ |" & vbCrLf & Left$(newTable, Len(newTable) - 2)
+    
+    ' 组装新的自动区块
     Dim lines As Variant
-    lines = Array( _
-        MARK_BEGIN, _
-        "### 导出信息（自动生成）", _
-        "- 工程名： " & projName, _
-        "- 导出时间： " & Format(Now, "yyyy-mm-dd HH:NN:SS"), _
-        "- 根目录： " & BACKUP_ROOT, _
-        "- 本次更新： " & commitMsg, _
-        MARK_END _
-    )
+    If isTodayBlockExist Then
+        lines = Array( _
+            MARK_BEGIN, _
+            "**" & todayDate & " 更新**", _
+            newList, _
+            newTable, _
+            MARK_END _
+        )
+    Else
+        lines = Array( _
+            MARK_BEGIN, _
+            "**" & todayDate & " 更新**", _
+            newList, _
+            newTable, _
+            MARK_END _
+        )
+    End If
     BuildReadmeAutoBlock = Join(lines, vbCrLf)
 End Function
 
@@ -477,3 +553,14 @@ Private Function SafeFile(ByVal s As String) As String
     SafeFile = s
 End Function
 
+' 提取旧的自动区块内容
+Private Function ExtractAutoBlock(ByVal content As String, ByVal tagBegin As String, ByVal tagEnd As String) As String
+    Dim p1 As Long, p2 As Long
+    p1 = InStr(1, content, tagBegin, vbTextCompare)
+    p2 = InStr(p1 + Len(tagBegin), content, tagEnd, vbTextCompare)
+    If p1 > 0 And p2 > p1 Then
+        ExtractAutoBlock = mid$(content, p1, p2 - p1 + Len(tagEnd))
+    Else
+        ExtractAutoBlock = ""
+    End If
+End Function
