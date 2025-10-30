@@ -348,61 +348,7 @@ Public Sub 导入两种表格样式_仅表格层()
         '（4）不设置段落/字符相关属性（水平/垂直居中等留待后续流程处理）
     End With
 End Sub
-' === 标准化表格样式：若存在则修改；不存在则创建（段落样式）===
-Public Sub EnsureStandardTableStyle()
-    Dim stdStyle As Style
 
-    ' 1) 尝试获取已存在的样式
-    On Error Resume Next
-    Set stdStyle = ActiveDocument.Styles("标准化表格样式")
-    On Error GoTo 0
-
-    ' 2) 不存在则创建；存在但类型非“段落样式”则重建为段落样式
-    If stdStyle Is Nothing Then
-        Set stdStyle = ActiveDocument.Styles.Add( _
-            name:="标准化表格样式", Type:=wdStyleTypeParagraph)
-    ElseIf stdStyle.Type <> wdStyleTypeParagraph Then
-        stdStyle.Delete
-        Set stdStyle = ActiveDocument.Styles.Add( _
-            name:="标准化表格样式", Type:=wdStyleTypeParagraph)
-    End If
-
-    ' 3) 设置样式属性
-    With stdStyle
-        .AutomaticallyUpdate = False
-
-        ' 尝试设为“独立样式”；若不被接受则回退到 Normal
-        On Error Resume Next
-        .BaseStyle = ""                                ' 不继承正文
-        If Err.Number <> 0 Then
-            Err.Clear
-            .BaseStyle = ActiveDocument.Styles(wdStyleNormal)
-        End If
-        On Error GoTo 0
-
-        ' ====== 字体 ======
-        With .Font
-            .NameFarEast = "宋体"                      ' 中文
-            .NameAscii = "Times New Roman"            ' 英文/数字
-            .Size = 10
-            .bold = False
-            .Color = wdColorAutomatic
-        End With
-
-        ' ====== 段落 ======
-        With .ParagraphFormat
-            .LineSpacingRule = wdLineSpaceSingle       ' 单倍行距
-            .SpaceBefore = 0                           ' 段前 0
-            .SpaceAfter = 0                            ' 段后 0
-            .LeftIndent = 0                            ' 左缩进
-            .RightIndent = 0                           ' 右缩进
-            .FirstLineIndent = 0                       ' 首行缩进
-            .CharacterUnitFirstLineIndent = 0
-            .alignment = wdAlignParagraphCenter        ' 居中
-            '.NoSpaceBetweenParagraphsOfSameStyle = True ' 可按需启用
-        End With
-    End With
-End Sub
 '========================================================
 ' 工具：仅保证“表格样式”的存在与类型正确（不改任何段落/字符属性）
 ' - 若同名样式存在但类型不是“表格样式”，则删除后以“表格样式”重建

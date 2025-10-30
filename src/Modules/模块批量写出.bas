@@ -47,11 +47,26 @@ End Sub
 
 '（二）只导出当前工程：全部组件
 Public Sub 导出_当前工程_全部()
-    ExportActiveProject True
+    ' 弹出输入面板获取Commit信息
+    Dim commitMsg As String
+    commitMsg = InputBox( _
+        Prompt:="请输入本次导出的Commit信息（将显示在README中）：" & vbCrLf & "例如：修复表格标题编号逻辑", _
+        Title:="输入Commit信息", _
+        Default:="") ' 默认空值
+    
+    ' 处理用户取消/未输入的情况
+    If commitMsg = "" Then
+        MsgBox "未输入Commit信息，已取消导出操作。", vbInformation, "提示"
+        Exit Sub
+    End If
+    
+    ' 调用核心导出过程，并传递commit信息
+    ExportActiveProject True, commitMsg
+
 End Sub
 
 '============================（三）核心过程============================
-Private Sub ExportActiveProject(ByVal exportAll As Boolean)
+Private Sub ExportActiveProject(ByVal exportAll As Boolean, Optional ByVal commitMsg As String = "")
     On Error GoTo FAIL
 
     '（一）拿当前工程
@@ -150,7 +165,7 @@ WRITE_META:
     WriteReferences proj, root & "\manifest\references.txt"
     WriteTextFile root & "\manifest\export_log.txt", log
     WriteGitignore root
-    WriteReadme root, proj.name    ' ← 仅更新 README 的自动区块（首次会生成模板）
+    WriteReadme root, proj.name, commitMsg    ' ← 新增传递commit信息
 
     StatusPulse pf, "完成。共匹配到 " & CStr(total) & " 个组件，已处理 " & CStr(done) & " 个。"
     If Not pf Is Nothing Then Unload pf
@@ -345,12 +360,11 @@ Private Sub WriteGitignore(ByVal root As String)
 End Sub
 
 ' 写 README（仅首次创建模板；以后仅更新自动区块）
-Private Sub WriteReadme(ByVal root As String, ByVal projName As String)
+Private Sub WriteReadme(ByVal root As String, ByVal projName As String, ByVal commitMsg As String)
     Dim path As String: path = root & "\README.md"
     Dim content As String, exists As Boolean
     exists = (Len(Dir$(path)) > 0)
-
-    Dim autoBlock As String: autoBlock = BuildReadmeAutoBlock(projName)
+    Dim autoBlock As String: autoBlock = BuildReadmeAutoBlock(projName, commitMsg)
 
     If Not exists Then
         ' 第一次生成：完整模板 + 自动区块
@@ -391,7 +405,7 @@ Private Function BuildReadmeTemplate(ByVal projName As String, ByVal autoBlock A
 End Function
 
 ' 生成 README 的“自动区块”（只此段会被覆盖）
-Private Function BuildReadmeAutoBlock(ByVal projName As String) As String
+Private Function BuildReadmeAutoBlock(ByVal projName As String, ByVal commitMsg As String) As String
     Dim lines As Variant
     lines = Array( _
         MARK_BEGIN, _
@@ -399,6 +413,7 @@ Private Function BuildReadmeAutoBlock(ByVal projName As String) As String
         "- 工程名： " & projName, _
         "- 导出时间： " & Format(Now, "yyyy-mm-dd HH:NN:SS"), _
         "- 根目录： " & BACKUP_ROOT, _
+        "- 本次更新： " & commitMsg, _
         MARK_END _
     )
     BuildReadmeAutoBlock = Join(lines, vbCrLf)
